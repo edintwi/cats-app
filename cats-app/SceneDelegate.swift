@@ -12,19 +12,26 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
 
 
-    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+    func scene(_ scene: UIScene,
+               willConnectTo session: UISceneSession,
+               options connectionOptions: UIScene.ConnectionOptions) {
+
         guard let windowScene = (scene as? UIWindowScene) else { return }
+
+        // Cria a janela com a windowScene correta
+        let window = UIWindow(windowScene: windowScene)
         
-        
-        self.window = UIWindow(frame: UIScreen.main.bounds)
-        self.window?.windowScene = windowScene
-        
+        // Cria o UINavigationController raiz
         let navVC = UINavigationController()
-        self.window?.rootViewController = navVC
         
+        // Cria e inicia o coordinator (que configura a root VC)
         let coordinator = AppCoordinator(navigationController: navVC)
         coordinator.start()
-        self.window?.makeKeyAndVisible()
+        
+        // Configura o rootViewController e mostra a janela
+        window.rootViewController = navVC
+        self.window = window
+        window.makeKeyAndVisible()
     }
     
     func sceneDidDisconnect(_ scene: UIScene) {

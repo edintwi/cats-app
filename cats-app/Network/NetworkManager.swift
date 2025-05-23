@@ -14,7 +14,7 @@ class NetworkManager {
     private init() {}
     
     func getCats(completion: @escaping (Result<[Cat], CatError>) -> Void) {
-        let endpoint = baseURL + "api/cats?limit=10"
+        let endpoint = baseURL + "api/cats?limit=20"
         
         guard let url = URL(string: endpoint) else {
             completion(.failure(.invalidURL))
