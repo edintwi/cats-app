@@ -1,5 +1,5 @@
 //
-//  HomeViewController.swift
+//  CatList.swift
 //  cats-app
 //
 //  Created by Edson Brandon on 22/05/25.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-class HomeViewController: UIViewController {
+class CatList: UIViewController {
     
     var cats: [Cat] = []
     
@@ -77,7 +77,7 @@ class HomeViewController: UIViewController {
     }
 }
 
-extension HomeViewController: UICollectionViewDelegate, UICollectionViewDataSource {
+extension CatList: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return cats.count
     }

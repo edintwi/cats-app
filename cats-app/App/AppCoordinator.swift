@@ -23,7 +23,7 @@ class AppCoordinator: Coordinator {
     }
     
     func start() {
-        let viewController = HomeViewController()
+        let viewController = CatList()
         navigationController.pushViewController(viewController, animated: false)
     }
 }
