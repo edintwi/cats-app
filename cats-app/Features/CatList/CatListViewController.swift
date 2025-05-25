@@ -10,7 +10,8 @@ import UIKit
 class CatList: UIViewController {
     
     var cats: [Cat] = []
-    
+    var isLoading = false
+
     override func viewDidLoad() {
         super.viewDidLoad()
         collectionView.register(CatCollectionViewCell.self, forCellWithReuseIdentifier: CatCollectionViewCell.identifier)
@@ -66,6 +67,32 @@ class CatList: UIViewController {
         }
     }
     
+    private func loadMoreItemsIfNeeded() {
+        guard !isLoading else { return }
+        isLoading = true
+
+        NetworkManager.shared.getCats { result in
+            DispatchQueue.main.async {
+                self.isLoading = false
+                switch result {
+                case .success(let newCats):
+                    guard !newCats.isEmpty else { return }
+
+                    let startIndex = self.cats.count
+                    let endIndex = startIndex + newCats.count
+                    let indexPaths = (startIndex..<endIndex).map { IndexPath(item: $0, section: 0) }
+
+                    self.cats.append(contentsOf: newCats)
+                    self.collectionView.insertItems(at: indexPaths)
+
+                case .failure(let error):
+                    print("Erro ao buscar cats: \(error)")
+                }
+            }
+        }
+    }
+
+    
     private func setupView() {
         view.addSubview(collectionView)
         NSLayoutConstraint.activate([
@@ -92,4 +119,14 @@ extension CatList: UICollectionViewDelegate, UICollectionViewDataSource {
         let size = collectionView.frame.width / 3
             return CGSize(width: size, height: size)
         }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let offsetY = scrollView.contentOffset.y
+        let contentHeight = scrollView.contentSize.height
+        let height = scrollView.frame.size.height
+        
+        if offsetY > contentHeight - height * 1.5 {
+            loadMoreItemsIfNeeded()
+        }
+    }
 }
