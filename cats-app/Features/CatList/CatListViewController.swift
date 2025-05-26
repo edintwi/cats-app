@@ -14,7 +14,7 @@ class CatListViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
-        viewModel.fetchCats {
+        viewModel.fetchInitialCats {
             self.collectionView.reloadData()
         }
     }
@@ -54,10 +54,8 @@ class CatListViewController: UIViewController {
     }
     
     private func loadMoreItemsIfNeeded() {
-        guard !viewModel.isLoading else { return }
            viewModel.loadMoreCats { indexPaths in
                self.collectionView.insertItems(at: indexPaths)
-               self.collectionView.reloadData()
            }
     }
 
@@ -83,7 +81,7 @@ extension CatListViewController: UICollectionViewDelegate, UICollectionViewDataS
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CatCollectionViewCell.identifier, for: indexPath) as? CatCollectionViewCell else {
             return UICollectionViewCell()
         }
-        cell.configure(with: viewModel.cats[indexPath.row].id)
+        cell.configure(with: viewModel.cats[indexPath.row])
         return cell
     }
     

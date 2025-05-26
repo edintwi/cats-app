@@ -10,15 +10,17 @@ import Foundation
 class CatListViewModel {
     private(set) var cats: [Cat] = []
     private(set) var isLoading: Bool = false
+    private var skip = 0
+    private var limit = 20
     
-    func fetchCats(completion: @escaping () -> Void) {
-        NetworkManager.shared.getCats { result in
+    func fetchInitialCats(completion: @escaping () -> Void) {
+        skip = 0
+        NetworkManager.shared.getCats(skip: skip, limit: limit) { result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let catsResponse):
                     self.cats = catsResponse
-                    print("Cats recebidos: \(self.cats)")
-                    
+                    self.skip += catsResponse.count
                 case .failure(let error):
                     print("Erro ao buscar cats: \(error)")
                 }
@@ -31,7 +33,7 @@ class CatListViewModel {
         guard !isLoading else { return }
         isLoading = true
         
-        NetworkManager.shared.getCats { [weak self] result in
+        NetworkManager.shared.getCats(skip: skip, limit: limit) { [weak self] result in
             DispatchQueue.main.async {
                 guard let self = self else { return }
                 
@@ -45,14 +47,13 @@ class CatListViewModel {
                     
                     let startIndex = self.cats.count
                     self.cats.append(contentsOf: newCats)
-                    let indexPaths = (startIndex..<self.cats.count).map {
-                        IndexPath(item: $0, section: 0)
-                    }
+                    self.skip += newCats.count
+                    let indexPaths = (startIndex..<self.cats.count).map { IndexPath(item: $0, section: 0) }
                     self.isLoading = false
                     completion(indexPaths)
                     
                 case .failure(let error):
-                    print("Erro ao buscar cats: \(error)")
+                    print("Erro ao buscar mais cats: \(error)")
                     self.isLoading = false
                     completion([])
                 }

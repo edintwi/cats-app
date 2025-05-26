@@ -6,15 +6,15 @@
 //
 
 import Foundation
-
+import UIKit
 class NetworkManager {
     static let shared           = NetworkManager()
     private let baseURL         = "https://cataas.com/"
-    
+    let cache                   = NSCache<NSString, UIImage>()
     private init() {}
     
-    func getCats(completion: @escaping (Result<[Cat], CatError>) -> Void) {
-        let endpoint = baseURL + "api/cats?limit=20"
+    func getCats(skip: Int, limit: Int, completion: @escaping (Result<[Cat], CatError>) -> Void) {
+        let endpoint = baseURL + "api/cats?limit=\(limit)&skip=\(skip)"
         
         guard let url = URL(string: endpoint) else {
             completion(.failure(.invalidURL))
@@ -50,4 +50,28 @@ class NetworkManager {
         
         task.resume()
     }
+    
+    func fetchImage(with urlString: String, completion: @escaping (UIImage?) -> Void) {
+        if let cachedImage = cache.object(forKey: urlString as NSString) {
+            completion(cachedImage)
+            return
+        }
+
+        guard let url = URL(string: urlString) else {
+            completion(nil)
+            return
+        }
+
+        URLSession.shared.dataTask(with: url) { data, _, _ in
+            var image: UIImage? = nil
+            if let data = data {
+                image = UIImage(data: data)
+                if let img = image {
+                    self.cache.setObject(img, forKey: urlString as NSString)
+                }
+            }
+            completion(image)
+        }.resume()
+    }
+
 }
