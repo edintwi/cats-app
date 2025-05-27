@@ -9,8 +9,21 @@ import UIKit
 
 class CatListViewController: UIViewController {
     
+    // MARK: - Properties
+    
     private var viewModel = CatListViewModel()
+    
+    private lazy var collectionView: UICollectionView = {
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: createCollectionViewLayout())
+        collectionView.dataSource = self
+        collectionView.delegate = self
+        collectionView.backgroundColor = .systemBackground
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        return collectionView
+    }()
 
+    // MARK: - Lifecycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
@@ -18,47 +31,8 @@ class CatListViewController: UIViewController {
             self.collectionView.reloadData()
         }
     }
-    
-    private func createCollectionViewLayout() -> UICollectionViewFlowLayout {
-        let layout = UICollectionViewFlowLayout()
-        
-        let spacing: CGFloat = 8
-        let itemsPerRow: CGFloat = 3
-        let totalSpacing = spacing * (itemsPerRow - 1) + spacing * 2
-        
-        let itemWidth = (UIScreen.main.bounds.width - totalSpacing) / itemsPerRow
-        layout.itemSize = CGSize(width: itemWidth, height: itemWidth)
-        
-        layout.minimumInteritemSpacing = spacing
-        layout.minimumLineSpacing = spacing
-        layout.sectionInset = UIEdgeInsets(top: spacing, left: spacing, bottom: spacing, right: spacing)
-        
-        return layout
-    }
-    
-    private lazy var collectionView: UICollectionView = {
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: createCollectionViewLayout())
-        
-        collectionView.dataSource = self
-        collectionView.delegate = self
-        collectionView.backgroundColor = .systemBackground
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
-        
-        return collectionView
-    } ()
-    
-    func reloadCollectionView() {
-        DispatchQueue.main.async { [weak self] in
-            self?.collectionView.reloadData()
-        }
-    }
-    
-    private func loadMoreItemsIfNeeded() {
-           viewModel.loadMoreCats { indexPaths in
-               self.collectionView.insertItems(at: indexPaths)
-           }
-    }
 
+    // MARK: - UI Setup
     
     private func setupView() {
         view.addSubview(collectionView)
@@ -70,9 +44,39 @@ class CatListViewController: UIViewController {
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
         ])
     }
+    
+    private func createCollectionViewLayout() -> UICollectionViewFlowLayout {
+        let layout = UICollectionViewFlowLayout()
+        let spacing: CGFloat = 8
+        let itemsPerRow: CGFloat = 3
+        let totalSpacing = spacing * (itemsPerRow - 1) + spacing * 2
+        let itemWidth = (UIScreen.main.bounds.width - totalSpacing) / itemsPerRow
+        layout.itemSize = CGSize(width: itemWidth, height: itemWidth)
+        layout.minimumInteritemSpacing = spacing
+        layout.minimumLineSpacing = spacing
+        layout.sectionInset = UIEdgeInsets(top: spacing, left: spacing, bottom: spacing, right: spacing)
+        return layout
+    }
+
+    // MARK: - Data Handling
+    
+    private func loadMoreItemsIfNeeded() {
+        viewModel.loadMoreCats { indexPaths in
+            self.collectionView.insertItems(at: indexPaths)
+        }
+    }
+
+    func reloadCollectionView() {
+        DispatchQueue.main.async { [weak self] in
+            self?.collectionView.reloadData()
+        }
+    }
 }
 
+// MARK: - UICollectionViewDelegate & UICollectionViewDataSource
+
 extension CatListViewController: UICollectionViewDelegate, UICollectionViewDataSource {
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return viewModel.cats.count
     }
@@ -87,8 +91,10 @@ extension CatListViewController: UICollectionViewDelegate, UICollectionViewDataS
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let size = collectionView.frame.width / 3
-            return CGSize(width: size, height: size)
-        }
+        return CGSize(width: size, height: size)
+    }
+
+    // MARK: - UIScrollViewDelegate
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let offsetY = scrollView.contentOffset.y
