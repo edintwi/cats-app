@@ -60,4 +60,9 @@ class CatListViewModel {
             }
         }
     }
+    
+    func resetCats() {
+        cats = []
+        skip = 0
+    }
 }

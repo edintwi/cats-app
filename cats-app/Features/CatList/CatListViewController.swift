@@ -18,6 +18,7 @@ class CatListViewController: UIViewController {
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.backgroundColor = .systemBackground
+        collectionView.refreshControl = refreshControl
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         return collectionView
     }()
@@ -28,7 +29,7 @@ class CatListViewController: UIViewController {
         super.viewDidLoad()
         setupView()
         viewModel.fetchInitialCats {
-            self.collectionView.reloadData()
+            self.reloadCollectionView()
         }
     }
 
@@ -57,8 +58,22 @@ class CatListViewController: UIViewController {
         layout.sectionInset = UIEdgeInsets(top: spacing, left: spacing, bottom: spacing, right: spacing)
         return layout
     }
+    
+    private lazy var refreshControl: UIRefreshControl = {
+        let refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action: #selector(reloadData), for: .valueChanged)
+        return refreshControl
+    } ()
 
     // MARK: - Data Handling
+    
+    @objc private func reloadData() {
+        viewModel.fetchInitialCats {
+            self.reloadCollectionView()
+            self.refreshControl.endRefreshing()
+        }
+        
+    }
     
     private func loadMoreItemsIfNeeded() {
         viewModel.loadMoreCats { indexPaths in
