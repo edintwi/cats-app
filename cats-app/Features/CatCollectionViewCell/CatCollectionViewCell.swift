@@ -49,7 +49,7 @@ class CatCollectionViewCell: UICollectionViewCell {
         catName.text = cat.tags.first ?? "Cat"
         imageView.image = nil
         
-        guard let url = URL(string: "https://cataas.com/cat?id=" + cat.id) else {
+        guard let url = URL(string: "https://cataas.com/cat/" + cat.id) else {
             return
         }
         
