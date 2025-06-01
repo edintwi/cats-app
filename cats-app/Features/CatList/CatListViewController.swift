@@ -8,10 +8,18 @@
 import UIKit
 
 class CatListViewController: UIViewController {
-    
     // MARK: - Properties
     
-    private var viewModel = CatListViewModel()
+    let viewModel: CatListViewModel
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    init(viewModel: CatListViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
     
     private lazy var collectionView: UICollectionView = {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: createCollectionViewLayout())
@@ -75,7 +83,7 @@ class CatListViewController: UIViewController {
         
     }
     
-    private func loadMoreItemsIfNeeded() {
+    private func loadMoreCatsIfNeeded() {
         viewModel.loadMoreCats { indexPaths in
             self.collectionView.insertItems(at: indexPaths)
         }
@@ -109,6 +117,10 @@ extension CatListViewController: UICollectionViewDelegate, UICollectionViewDataS
         return CGSize(width: size, height: size)
     }
 
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let cat = viewModel.cats[indexPath.item]
+        viewModel.didSelectCat(cat: cat)
+    }
     // MARK: - UIScrollViewDelegate
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
@@ -117,7 +129,7 @@ extension CatListViewController: UICollectionViewDelegate, UICollectionViewDataS
         let height = scrollView.frame.size.height
         
         if offsetY > contentHeight - height * 1.5 {
-            loadMoreItemsIfNeeded()
+            loadMoreCatsIfNeeded()
         }
     }
 }

@@ -7,11 +7,19 @@
 
 import Foundation
 
+protocol CatlistViewModelDelegate: NSObject {
+    
+}
+
 class CatListViewModel {
     private(set) var cats: [Cat] = []
     private(set) var isLoading: Bool = false
     private var skip = 0
     private var limit = 20
+    var onCatSelected: ((Cat) -> Void)?
+
+    
+    weak var delegate: CatlistViewModelDelegate?
     
     func fetchInitialCats(completion: @escaping () -> Void) {
         skip = 0
@@ -64,5 +72,9 @@ class CatListViewModel {
     func resetCats() {
         cats = []
         skip = 0
+    }
+    
+    func didSelectCat(cat: Cat) {
+        onCatSelected?(cat)
     }
 }
