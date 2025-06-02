@@ -21,19 +21,37 @@ class CatDetailsViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .red
-        // Do any additional setup after loading the view.
+        setupView()
+        setupConstraints()
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    private lazy var catBanner: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
+        imageView.clipsToBounds = true
+        if let url = URL(string: "https://cataas.com/cat/" + viewModel.cat.id) {
+            imageView.load(url: url)
+        } else {
+            imageView.image = UIImage(systemName: "photo")
+            imageView.backgroundColor = .lightGray
+        }
+        
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        
+        return imageView
+    } ()
+    
+    private func setupView() {
+        view.addSubview(catBanner)
+        view.backgroundColor = .systemBackground
     }
-    */
-
+    
+    private func setupConstraints() {
+        NSLayoutConstraint.activate([
+            catBanner.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            catBanner.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            catBanner.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            catBanner.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.4),
+        ])
+    }
 }
