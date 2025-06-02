@@ -23,7 +23,9 @@ class CatDetailsViewController: UIViewController {
         super.viewDidLoad()
         setupView()
         setupConstraints()
+        populateStackView()
     }
+    
     
     private lazy var catBanner: UIImageView = {
         let imageView = UIImageView()
@@ -41,17 +43,82 @@ class CatDetailsViewController: UIViewController {
         return imageView
     } ()
     
+    private lazy var idLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 20, weight: .bold)
+        label.textColor = .systemGray
+        label.text = "ID: " + viewModel.cat.id
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    } ()
+
+    private lazy var tagsLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 16, weight: .bold)
+        label.textColor = .systemGray
+        label.text = "Tags:"
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    } ()
+    
+    private lazy var tagsStackView: UIStackView = {
+        let stackView = UIStackView()
+        
+        stackView.axis = .horizontal
+        stackView.alignment = .leading
+        stackView.spacing = 16
+        stackView.distribution = .fillProportionally
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        return stackView
+    } ()
+    
+    private lazy var createdAtLabel: UILabel = {
+        let label = UILabel()
+        
+        label.text = "Created At: " + viewModel.cat.createdAt
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    } ()
+    
+    private func populateStackView() {
+        for tagText in viewModel.cat.tags {
+            let tagLabel = TagLabel()
+            tagLabel.text = tagText
+            
+            tagsStackView.addArrangedSubview(tagLabel)
+        }
+    }
+    
     private func setupView() {
         view.addSubview(catBanner)
+        view.addSubview(tagsStackView)
+        view.addSubview(idLabel)
+        view.addSubview(tagsLabel)
+        view.addSubview(createdAtLabel)
+        
         view.backgroundColor = .systemBackground
     }
     
     private func setupConstraints() {
+        let padding: CGFloat = 20
+        
         NSLayoutConstraint.activate([
             catBanner.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             catBanner.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             catBanner.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             catBanner.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.4),
+            
+            idLabel.topAnchor.constraint(equalTo: catBanner.bottomAnchor, constant: padding),
+            idLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
+            
+            tagsLabel.topAnchor.constraint(equalTo: idLabel.bottomAnchor, constant: padding),
+            tagsLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
+            
+            tagsStackView.topAnchor.constraint(equalTo: tagsLabel.bottomAnchor, constant: padding),
+            tagsStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
+            
+            createdAtLabel.topAnchor.constraint(equalTo: tagsStackView.bottomAnchor, constant: padding),
+            createdAtLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
         ])
     }
 }
