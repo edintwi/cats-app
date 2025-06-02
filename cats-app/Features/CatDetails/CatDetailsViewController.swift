@@ -75,12 +75,32 @@ class CatDetailsViewController: UIViewController {
     private lazy var createdAtLabel: UILabel = {
         let label = UILabel()
         
-        label.text = "Created At: " + viewModel.cat.createdAt
+        let inputDateFormatter = DateFormatter()
+        inputDateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+        inputDateFormatter.locale = Locale(identifier: "en_US_POSIX")
+        inputDateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
+        
+        let outputDateFormatter = DateFormatter()
+        outputDateFormatter.dateStyle = .medium
+        outputDateFormatter.timeStyle = .short
+        outputDateFormatter.locale = Locale(identifier: "en_US")
+        outputDateFormatter.doesRelativeDateFormatting = true
+        
+        if let dateObject = inputDateFormatter.date(from: viewModel.cat.createdAt) {
+            label.text = "Created At: " + outputDateFormatter.string(from: dateObject)
+        } else {
+            label.text = "Created At: Invalid Date"
+        }
+        
+        label.textColor = .systemGray
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     } ()
-    
     private func populateStackView() {
+        if viewModel.cat.tags.isEmpty {
+            tagsLabel.isHidden = true
+        }
+        
         for tagText in viewModel.cat.tags {
             let tagLabel = TagLabel()
             tagLabel.text = tagText
