@@ -1,3 +1,5 @@
+## Cats App
+
 Um aplicativo iOS simples para explorar e visualizar imagens de gatos, obtidas de uma API externa. O aplicativo demonstra uma arquitetura MVVMC (Model-View-ViewModel-Coordinator) robusta e práticas modernas de desenvolvimento iOS.
 
 ---
