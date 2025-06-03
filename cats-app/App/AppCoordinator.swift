@@ -6,7 +6,7 @@
 //
 
 import UIKit
-
+import SwiftUI
 protocol Coordinator: AnyObject {
     
     var navigationController: UINavigationController { get set }
@@ -40,6 +40,9 @@ class AppCoordinator: Coordinator {
     func pushCatDetails(for cat: Cat) {
         let detailsVM = CatDetailsViewModel(cat: cat)
         let detailsVC = CatDetailsViewController(viewModel: detailsVM)
-        navigationController.pushViewController(detailsVC, animated: true)
+        let catDetailsSwiftUIView = CatDetailsView(viewModel: detailsVM)
+        let hostingController = UIHostingController(rootView: catDetailsSwiftUIView)
+
+        navigationController.pushViewController(hostingController, animated: true)
     }
 }

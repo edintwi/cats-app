@@ -12,4 +12,10 @@ struct Cat: Decodable {
     let tags: [String]
     //let mimeType: String
     let createdAt: String
+    
+    init(id: String, tags: [String], createdAt: String) {
+            self.id = id
+            self.tags = tags
+            self.createdAt = createdAt
+        }
 }
