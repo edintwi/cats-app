@@ -61,7 +61,7 @@ This project was built following the principles of a clean and organized archite
 
 1. Clone the repository:
    ```bash
-   git clone https://docs.github.com/en/repositories/creating-and-managing-repositories/about-repositories
+   git clone https://github.com/edintwi/cats-app
    ```
 
 2. Navigate to the project directory:
